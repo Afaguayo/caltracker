@@ -1,0 +1,71 @@
+Page
+Page number
+2
+of 2
+The University of Texas at El Paso
+Department of Computer Science
+CS 4381/5381 – Topics in Software Engineering:
+Applied Agile Software Development and Data Management
+Hosting Setup Instructions
+1. Set Up Hosting on Firebase Console
+a. Go to console and click on the hosting tab
+b. Go through the prompts
+2. Install NVM
+Mac OS
+In terminal use the following command:
+curl -o- https://raw.githubusercontent.com/nvm-
+sh/nvm/v0.39.1/install.sh | bash
+Windows
+https://github.com/coreybutler/nvm-windows/releases
+Download/Run: nvm-setup.exe
+• If a prompt says: “Node v##.##.## is already installed. Do you want NVM to
+control this version?”
+o Select Yes
+o Select OK to C:\Program Files\nodejs will be overwritten
+o Select Finish
+o Close all terminals/cmd prompts
+3. Open terminal (Windows can use VS Code/PowerShell)
+a. Run the commands:
+i. nvm -v
+ii. node -v
+b. If successful, both should provide a version number in the console
+4. Open your individual sandbox (Lastname-Sandbox) on VS Code
+5. Open a terminal
+6. Run the command:
+npm install -g firebase-tools
+7. Log into Firebase through Firebase CLI, run command:
+firebase login:ci
+i. if this fails (Windows Only), run the following command: Set-
+ExecutionPolicy RemoteSigned
+ii. Try again
+a. Follow prompts to login (it will open up a browser)
+8. Run the command:
+firebase projects:list
+a. This command is to verify that you are logged in and should list all of your
+projects on Firebase
+9. Run the command:
+firebase init hosting
+a. Select “Use an existing project”
+b. Use Lastname-Sandbox
+10. Follow the on screen prompts: (NOTE: public directory should be dist and do not
+overwrite index.html)
+Example Output:
+? What do you want to use as your public directory? dist
+? Configure as a single-page app (rewrite all urls to /index.html)? No
+? Set up automatic builds and deploys with GitHub? No
+? File dist/404.html already exists. Overwrite? Yes
+✔ Wrote dist/404.html
+? File dist/index.html already exists. Overwrite? No
+i Skipping write of dist/index.html
+i Writing configuration info to firebase.json...
+i Writing project information to .firebaserc...
+✔ Firebase initialization complete!
+11. Run the command:
+firebase deploy --only hosting
+12. You will be given a URL that you can copy/paste to visit your site
+13. In the console you can go to “Hosting” and you will see your site domain and release
+history
+14. To preview before pushing live, run the following command:
+firebase hosting:channel:deploy preview_name
+a. The console will show a URL that you can use to preview before you push your
+project live
