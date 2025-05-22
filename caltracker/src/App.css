@@ -23,43 +23,38 @@ body, html, #root {
   background: #f5f7fa;
 }
 
-/* Header */
 header {
-  background: #fff;
-  padding: 1rem 1.5rem;
+  background: none;
+  padding: 1rem 0;
+  width: 100%;
   max-width: 380px;
   margin: 0 auto;
-  width: 100%;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-  border-radius: 12px;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  backdrop-filter: saturate(180%) blur(10px);
-  transition: background-color 0.3s ease;
+  gap: 0.20rem; /* space between title and button */
 }
 
 header h1 {
-  font-weight: 700;
-  font-size: 1.75rem;
+  font-size: 1.5rem;
+  font-weight: 600;
   color: #111827;
-  user-select: none;
+  margin: 0;
+  flex-shrink: 0;
 }
 
 header button {
   background: #ef4444;
   border: none;
-  padding: 0.5rem 1rem;
+  padding: 0.4rem 0.9rem;
   color: white;
   font-weight: 600;
   border-radius: 8px;
   cursor: pointer;
-  box-shadow: 0 3px 7px rgba(239, 68, 68, 0.5);
+  box-shadow: 0 3px 7px rgba(239, 68, 68, 0.4);
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  margin-left: auto; /* optional: keeps it aligned to the end but close */
 }
+
 
 header button:hover {
   background: #dc2626;
