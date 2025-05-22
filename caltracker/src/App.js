@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import EntryForm     from "./components/EntryForm";
 import EntryList     from "./components/EntryList";
 import WeightTracker from "./components/WeightTracker";
+import './App.css';
+
 import {
   onAuthReady,
   signUp,

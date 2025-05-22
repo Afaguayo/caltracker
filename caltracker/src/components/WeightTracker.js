@@ -16,9 +16,9 @@ import {
 } from "recharts";
 
 export default function WeightTracker({ uid, desiredWeight }) {
-  const [newWeight,  setNewWeight]  = useState("");
-  const [logs,       setLogs]       = useState([]);
-  const [editingId,  setEditingId]  = useState(null);
+  const [newWeight, setNewWeight] = useState("");
+  const [logs, setLogs] = useState([]);
+  const [editingId, setEditingId] = useState(null);
   const [editWeight, setEditWeight] = useState("");
 
   // Subscribe
@@ -55,16 +55,18 @@ export default function WeightTracker({ uid, desiredWeight }) {
 
   // Delete
   const handleDelete = async id => {
-    if (window.confirm("Delete this weight log?")) {
       await deleteWeightLog(id);
-    }
   };
 
   // Chart data
   const data = logs.map(log => ({
-    date:   log.date.toISOString().slice(0, 10),
+    date: log.date.toISOString().slice(0, 10),
     weight: log.weight
   }));
+
+  // Suggested protein intake
+  const latestWeight = logs.length > 0 ? logs[logs.length - 1].weight : null;
+  const suggestedProtein = latestWeight ? Math.round(latestWeight * 1.0) : null;
 
   return (
     <div className="p-4 bg-white rounded shadow-sm">
@@ -85,7 +87,12 @@ export default function WeightTracker({ uid, desiredWeight }) {
       </form>
 
       {data.length > 0 && (
-        <LineChart width={600} height={300} data={data} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
+        <LineChart
+          width={350}
+          height={300}
+          data={data}
+          margin={{ top: 20, right: 30, left: 0, bottom: 0 }}
+        >
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="date" />
           <YAxis domain={["auto", "auto"]} />
@@ -93,6 +100,13 @@ export default function WeightTracker({ uid, desiredWeight }) {
           <ReferenceLine y={desiredWeight} stroke="red" label="Goal" />
           <Line type="monotone" dataKey="weight" stroke="#8884d8" dot />
         </LineChart>
+      )}
+
+      {latestWeight && (
+        <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded text-sm">
+          <p><strong>Latest Weight:</strong> {latestWeight} lbs</p>
+          <p><strong>Suggested Protein Intake:</strong> {suggestedProtein} g/day (based on 1g/lb)</p>
+        </div>
       )}
 
       <ul className="mt-4 space-y-2 text-sm">
@@ -131,4 +145,5 @@ export default function WeightTracker({ uid, desiredWeight }) {
       </ul>
     </div>
   );
+  
 }

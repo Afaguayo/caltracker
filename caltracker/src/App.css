@@ -1,38 +1,335 @@
-.App {
-  text-align: center;
+/* Reset and base */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+body, html, #root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #f9fafb;
+  overflow-x: hidden; /* Prevent horizontal scroll */
+  color: #333;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
+/* Container */
+.min-h-screen {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background: #f5f7fa;
+}
+
+/* Header */
+header {
+  background: #fff;
+  padding: 1rem 1.5rem;
+  max-width: 480px;
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  border-radius: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  backdrop-filter: saturate(180%) blur(10px);
+  transition: background-color 0.3s ease;
+}
+
+header h1 {
+  font-weight: 700;
+  font-size: 1.75rem;
+  color: #111827;
+  user-select: none;
+}
+
+header button {
+  background: #ef4444;
+  border: none;
+  padding: 0.5rem 1rem;
+  color: white;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 3px 7px rgba(239, 68, 68, 0.5);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+header button:hover {
+  background: #dc2626;
+  box-shadow: 0 5px 15px rgba(220, 38, 38, 0.6);
+}
+
+/* Forms and sections */
+section, main {
+  max-width: 480px;
+  margin: 1.5rem auto;
+  background: white;
+  padding: 1.5rem 2rem;
+  border-radius: 16px;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+  transition: box-shadow 0.3s ease;
+}
+
+section:hover, main:hover {
+  box-shadow: 0 15px 30px rgba(0,0,0,0.12);
+}
+
+p, label {
+  color: #4b5563;
+  font-size: 0.9rem;
+}
+
+/* Inputs and buttons */
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="date"],
+select {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border-radius: 12px;
+  border: 1.8px solid #d1d5db;
+  font-size: 1rem;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  background: #f9fafb;
+  outline-offset: 2px;
+  box-shadow: inset 0 2px 4px rgb(0 0 0 / 0.06);
+  box-sizing: border-box;
+}
+
+/* Fix for goal weight input size inside flex or narrow containers */
+input[type="number"] {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="number"]:focus,
+input[type="date"]:focus,
+select:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 6px #3b82f6aa;
+  background: #fff;
+}
+
+input::placeholder {
+  color: #9ca3af;
+  font-weight: 500;
+}
+
+/* Buttons */
+button {
+  cursor: pointer;
+  border: none;
+  font-weight: 600;
+  border-radius: 12px;
+  padding: 0.6rem 1.2rem;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+  box-shadow: none;
+}
+
+/* Color variations */
+button.bg-blue-600 {
+  background-color: #2563eb;
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
+button.bg-blue-600:hover {
+  background-color: #1d4ed8;
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.5);
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+button.bg-green-600 {
+  background-color: #16a34a;
+  color: white;
+}
+
+button.bg-green-600:hover {
+  background-color: #15803d;
+  box-shadow: 0 6px 20px rgba(22, 163, 74, 0.5);
+}
+
+button.bg-purple-600 {
+  background-color: #7c3aed;
+  color: white;
+}
+
+button.bg-purple-600:hover {
+  background-color: #6b21a8;
+  box-shadow: 0 6px 20px rgba(124, 58, 237, 0.5);
+}
+
+button.text-blue-600 {
+  background: none;
+  color: #2563eb;
+  text-decoration: underline;
+  padding: 0;
+  box-shadow: none;
+  font-weight: 500;
+}
+
+button.text-blue-600:hover {
+  color: #1d4ed8;
+}
+
+/* Animate button presses */
+button:active {
+  transform: scale(0.98);
+  transition: transform 0.1s ease;
+}
+
+/* Flex utilities */
+.flex {
+  display: flex;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.gap-2 {
+  gap: 0.5rem;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+/* Spacing */
+.p-4 {
+  padding: 1rem;
+}
+
+.p-6 {
+  padding: 1.5rem;
+}
+
+.mb-2 {
+  margin-bottom: 0.5rem;
+}
+
+.mb-4 {
+  margin-bottom: 1rem;
+}
+
+.mt-4 {
+  margin-top: 1rem;
+}
+
+.mt-6 {
+  margin-top: 1.5rem;
+}
+
+.space-y-1 > * + * {
+  margin-top: 0.25rem;
+}
+
+.space-y-2 > * + * {
+  margin-top: 0.5rem;
+}
+
+.space-y-4 > * + * {
+  margin-top: 1rem;
+}
+
+.space-y-6 > * + * {
+  margin-top: 1.5rem;
+}
+
+/* Text */
+.text-center {
+  text-align: center;
+}
+
+.text-sm {
+  font-size: 0.85rem;
+}
+
+.text-xl {
+  font-size: 1.25rem;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+.font-semibold {
+  font-weight: 600;
+}
+
+.text-red-600 {
+  color: #dc2626;
+}
+
+.text-yellow-600 {
+  color: #ca8a04;
+}
+
+.text-gray-700 {
+  color: #374151;
+}
+
+/* Rounded */
+.rounded {
+  border-radius: 12px;
+}
+
+/* Prevent horizontal scroll on inputs */
+input[type="number"], input[type="date"], select {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Form layout adjustments */
+form.space-y-2 {
+  width: 100%;
+}
+
+/* Responsive tweaks */
+@media (max-width: 520px) {
+  header, section, main {
+    margin: 1rem 1rem;
+    padding: 1rem 1.25rem;
+    border-radius: 10px;
   }
-  to {
-    transform: rotate(360deg);
+
+  header h1 {
+    font-size: 1.5rem;
   }
+}
+
+/* Graph container fix: keep graph responsive and prevent overflow */
+.graph-container {
+  max-width: 100%;
+  overflow-x: auto; /* scroll if needed */
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+/* Make svg, canvas, or img inside graph container scale responsively */
+.graph-container > svg,
+.graph-container > canvas,
+.graph-container > img {
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  display: block;
 }
