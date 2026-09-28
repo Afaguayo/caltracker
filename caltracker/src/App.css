@@ -328,3 +328,62 @@ form.space-y-2 {
   max-width: 100%;
   display: block;
 }
+
+/* Small action buttons (Edit / Delete / Cancel / day arrows) */
+button.bg-blue-500,
+button.bg-red-500,
+button.bg-gray-300 {
+  padding: 0.3rem 0.7rem;
+  border-radius: 8px;
+  box-shadow: none;
+}
+button.bg-blue-500 { background: #3b82f6; color: white; }
+button.bg-blue-500:hover { background: #2563eb; }
+button.bg-red-500 { background: #ef4444; color: white; }
+button.bg-red-500:hover { background: #dc2626; }
+button.bg-gray-300 { background: #e5e7eb; color: #111827; }
+button.bg-gray-300:hover { background: #d1d5db; }
+
+.text-gray-600 { color: #4b5563; }
+
+/* Weight summary box */
+.bg-blue-50 {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 10px;
+  padding: 0.75rem;
+}
+
+/* Calories progress bar */
+.progress {
+  width: 100%;
+  height: 10px;
+  background: #e5e7eb;
+  border-radius: 999px;
+  overflow: hidden;
+}
+.progress-bar {
+  height: 100%;
+  background: #10b981;
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+.progress-bar.over { background: #ef4444; }
+
+/* Entry and weigh-in rows wrap on narrow screens */
+.entry-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.entry-list li {
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+.entry-list li:last-child { border-bottom: none; }
+.gap-4 { gap: 1rem; }
+.w-20 { width: 5rem; }
+.w-24 { width: 6rem; }
+.w-full { width: 100%; }

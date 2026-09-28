@@ -1,0 +1,27 @@
+rules_version = '2';
+
+// Each user can only read and write their own profile, food entries
+// and weight logs under users/{uid}. Everything else is denied.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+
+      match /entries/{entryId} {
+        allow read, delete: if request.auth != null && request.auth.uid == uid;
+        allow create, update: if request.auth != null && request.auth.uid == uid
+          && request.resource.data.description is string
+          && request.resource.data.calories is number
+          && request.resource.data.calories >= 0;
+      }
+
+      match /weightLogs/{logId} {
+        allow read, delete: if request.auth != null && request.auth.uid == uid;
+        allow create, update: if request.auth != null && request.auth.uid == uid
+          && request.resource.data.weight is number
+          && request.resource.data.weight > 0
+          && request.resource.data.date is timestamp;
+      }
+    }
+  }
+}

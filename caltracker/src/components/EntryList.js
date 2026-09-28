@@ -4,10 +4,11 @@ import {
   deleteEntry,
   updateEntry
 } from "../firebase";
+import { todayStr, shiftDateStr, parseDateStr, dailySummary } from "../lib/calc";
 
 export default function EntryList({
   uid,
-  selectedDate = new Date().toISOString().slice(0, 10),
+  selectedDate = todayStr(),
   targetCalories
 }) {
   const dateStr = selectedDate;
@@ -29,14 +30,7 @@ export default function EntryList({
 
   useEffect(() => {
     if (!uid) return;
-    const [y, m, d] = dateStr.split("-");
-    const prev = new Date(+y, +m - 1, +d);
-    prev.setDate(prev.getDate() - 1);
-    const prevStr = [
-      prev.getFullYear(),
-      String(prev.getMonth() + 1).padStart(2, "0"),
-      String(prev.getDate()).padStart(2, "0")
-    ].join("-");
+    const prevStr = shiftDateStr(dateStr, -1);
     const unsubPrev = subscribeEntriesForDate(uid, prevStr, setPrevEntries);
     return () => unsubPrev();
   }, [uid, dateStr]);
@@ -54,10 +48,11 @@ export default function EntryList({
     setEditVals({ description: "", calories: "", protein: "" });
   };
   const saveEdit = async id => {
+    if (!String(editVals.description).trim() || editVals.calories === "") return;
     await updateEntry(id, {
-      description: editVals.description.trim(),
-      calories:    Number(editVals.calories),
-      protein:     Number(editVals.protein)
+      description: String(editVals.description).trim(),
+      calories:    Number(editVals.calories) || 0,
+      protein:     Number(editVals.protein)  || 0
     });
     cancelEdit();
   };
@@ -67,20 +62,10 @@ export default function EntryList({
     }
   };
 
-  const totalCal  = entries.reduce((sum, e) => sum + (e.calories || 0), 0);
-  const totalProt = entries.reduce((sum, e) => sum + (e.protein  || 0), 0);
-  const prevCal   = prevEntries.reduce((sum, e) => sum + (e.calories || 0), 0);
+  const { totalCal, totalProt, carryover, goal: todayGoal, remaining, percent } =
+    dailySummary({ entries, prevEntries, targetCalories });
 
-  const carryover = typeof targetCalories === "number"
-    ? Math.max(0, prevCal - targetCalories)
-    : 0;
-  const todayGoal = typeof targetCalories === "number"
-    ? targetCalories - carryover
-    : null;
-  const remaining = todayGoal != null ? todayGoal - totalCal : null;
-
-  const [yy, mm, dd] = dateStr.split("-");
-  const dispDate    = new Date(+yy, +mm - 1, +dd);
+  const dispDate = parseDateStr(dateStr);
 
   return (
     <div className="p-4 bg-white rounded shadow text-sm space-y-2">
@@ -88,8 +73,23 @@ export default function EntryList({
       {todayGoal != null && <p><strong>Goal:</strong> {todayGoal} kcal</p>}
       {remaining != null && (
         <p className={remaining < 0 ? "text-red-600" : ""}>
-          <strong>Remaining:</strong> {remaining} kcal
+          <strong>{remaining < 0 ? "Over by:" : "Remaining:"}</strong> {Math.abs(remaining)} kcal
         </p>
+      )}
+      {percent != null && (
+        <div
+          className="progress"
+          role="progressbar"
+          aria-valuenow={percent}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-label="Calories eaten vs. goal"
+        >
+          <div
+            className={remaining < 0 ? "progress-bar over" : "progress-bar"}
+            style={{ width: `${percent}%` }}
+          />
+        </div>
       )}
       <p><strong>Protein:</strong> {totalProt} g</p>
       <p>
@@ -100,7 +100,10 @@ export default function EntryList({
         :</strong> {totalCal} kcal
       </p>
 
-      <ul className="space-y-2">
+      {entries.length === 0 && (
+        <p className="text-gray-700">No food logged for this day yet.</p>
+      )}
+      <ul className="space-y-2 entry-list">
         {entries.map(e => (
           <li key={e.id} className="flex justify-between items-center">
             {editingId === e.id ? (

@@ -15,7 +15,7 @@ import {
   doc,
   updateDoc,
   query,
-  where,           // ← added this
+  where,
   orderBy,
   onSnapshot,
   serverTimestamp,
@@ -23,6 +23,7 @@ import {
   getDoc,
   setDoc
 } from "firebase/firestore";
+import { dayBounds, todayStr, parseDateStr } from "./lib/calc";
 
 // .env-based config
 const firebaseConfig = {
@@ -63,14 +64,19 @@ export async function saveUserSettings(uid, data) {
   await setDoc(ref, data, { merge: true });
 }
 
-// — Entry helpers (now under users/{uid}/entries) —
-export async function addEntry(entry) {
+// — Entry helpers (users/{uid}/entries) —
+// Entries for today get the server time; entries logged for another day
+// are stamped at noon of that day so they show up under it.
+export async function addEntry(entry, dateStr = todayStr()) {
   const uid = auth.currentUser.uid;
   const ref = collection(db, "users", uid, "entries");
-  return addDoc(ref, {
-    ...entry,
-    createdAt: serverTimestamp(),
-  });
+  let createdAt = serverTimestamp();
+  if (dateStr !== todayStr()) {
+    const noon = parseDateStr(dateStr);
+    noon.setHours(12);
+    createdAt = Timestamp.fromDate(noon);
+  }
+  return addDoc(ref, { ...entry, createdAt });
 }
 export function deleteEntry(id) {
   const uid = auth.currentUser.uid;
@@ -81,9 +87,7 @@ export function updateEntry(id, updates) {
   return updateDoc(doc(db, "users", uid, "entries", id), updates);
 }
 export function subscribeEntriesForDate(uid, dateStr, onUpdate) {
-  const [year, month, day] = dateStr.split("-");
-  const start = new Date(+year, +month - 1, +day, 0, 0, 0);
-  const end   = new Date(+year, +month - 1, +day, 23, 59, 59);
+  const { start, end } = dayBounds(dateStr);
 
   const ref = collection(db, "users", uid, "entries");
   const q   = query(
@@ -102,7 +106,8 @@ export function subscribeEntriesForDate(uid, dateStr, onUpdate) {
           description: data.description,
           calories:    data.calories,
           protein:     data.protein || 0,
-          createdAt:   data.createdAt?.toDate() || new Date(0),
+          // Pending server timestamps are null locally until written.
+          createdAt:   data.createdAt?.toDate() || new Date(),
         };
       });
       onUpdate(arr);
@@ -113,7 +118,7 @@ export function subscribeEntriesForDate(uid, dateStr, onUpdate) {
   );
 }
 
-// — Weight log helpers (now under users/{uid}/weightLogs) —
+// — Weight log helpers (users/{uid}/weightLogs) —
 export async function addWeightLog(uid, { date, weight }) {
   const ref = collection(db, "users", uid, "weightLogs");
   return addDoc(ref, {
@@ -145,10 +150,12 @@ export function subscribeWeightLogs(uid, onUpdate) {
     }
   );
 }
-export async function updateWeightLog(id, { weight }) {
+export async function updateWeightLog(id, { weight, date }) {
   const uid = auth.currentUser.uid;
   const ref = doc(db, "users", uid, "weightLogs", id);
-  return updateDoc(ref, { weight });
+  const updates = { weight };
+  if (date) updates.date = Timestamp.fromDate(date);
+  return updateDoc(ref, updates);
 }
 export function deleteWeightLog(id) {
   const uid = auth.currentUser.uid;
