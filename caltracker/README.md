@@ -1,70 +1,65 @@
-# Getting Started with Create React App
+# Calorie Tracker
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A calorie, protein and weight tracker built with React and Firebase (Auth + Firestore), hosted on Firebase Hosting.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+- **Accounts**: email/password sign-up and log-in (Firebase Auth); each user's data is private.
+- **TDEE calculator**: Mifflin-St Jeor BMR × activity level, saved to your profile.
+- **Weight plan**: pick a target weight and number of weeks, and get a daily calorie target. It warns you if the target falls below 1,500 kcal (male) or 1,200 kcal (female).
+- **Food log**: log calories and protein for any day, not just today; edit or delete entries.
+- **Daily summary**: goal, remaining or over, a progress bar and protein total. Calories eaten over yesterday's goal carry over and reduce today's goal.
+- **Weight progress**: log weigh-ins by date, see a line chart against your goal, change since your first weigh-in, and a suggested protein intake (1 g/lb).
+- **Day navigation**: step back and forward through days, or jump to today.
 
-### `npm start`
+## Getting started
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+```bash
+cd caltracker
+npm install
+cp .env.example .env   # fill in your Firebase web app config
+npm start              # http://localhost:3000
+```
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+The Firebase config values come from **Firebase console → Project settings → Your apps → Web app**.
+In the console, enable **Authentication → Email/Password** and create a **Firestore** database.
 
-### `npm test`
+## Scripts
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+| Command | What it does |
+|---|---|
+| `npm start` | Dev server with hot reload |
+| `npm test` | Unit tests (calculations) and App smoke tests; Firebase is mocked |
+| `npm run build` | Production build into `build/` |
 
-### `npm run build`
+## Deploy
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```bash
+npm run build
+firebase deploy --only hosting,firestore:rules
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+`firestore.rules` limits every user to their own `users/{uid}` document and its `entries` and `weightLogs` subcollections, and checks that entries have a description and non-negative calories and that weigh-ins have a positive weight and a date. **Deploy the rules**; without them the database falls back to whatever rules the Firebase console has.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Data model
 
-### `npm run eject`
+```
+users/{uid}                     profile: height, weight, age, gender, activity,
+                                targetCalories (TDEE), desiredWeight,
+                                timeFrameWeeks, planCalories
+users/{uid}/entries/{id}        description, calories, protein, createdAt
+users/{uid}/weightLogs/{id}     weight, date
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## Project layout
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+```
+src/
+├── App.js                  auth screens, profile/TDEE, weight plan, day picker
+├── firebase.js             Firebase init + all Auth/Firestore calls
+├── lib/calc.js             pure math and date helpers (unit tested)
+└── components/
+    ├── EntryForm.js        log food for the selected day
+    ├── EntryList.js        daily summary, progress bar, edit/delete entries
+    └── WeightTracker.js    weigh-ins, chart, protein suggestion
+```
